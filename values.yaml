@@ -6,11 +6,21 @@
 replicaCount: 1
 
 image:
-  repository: mycluster.icp:8500/zen/http-https-echo
-  tag: 1.0.0
-  pullPolicy: IfNotPresent
+  repository: "mendhak/http-https-echo"
+  tag: "latest"
+  pullPolicy: "IfNotPresent"
 
 service:
-  type: ClusterIP
+  type: "ClusterIP"
+  headless: true
   httpPort: 8080
   httpsPort: 8443
+
+route:
+  host: "http-https-echo.local"
+  path: "/"
+  tls:
+    enabled: false
+    caCertificate:
+    certificate:
+    key:

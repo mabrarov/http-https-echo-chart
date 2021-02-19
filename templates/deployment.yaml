@@ -1,28 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "http-https-echo.fullname" . }}
+  name: {{ include "http-https-echo.fullname" . | quote }}
   labels:
-    app.kubernetes.io/name: {{ include "http-https-echo.name" . }}
-    helm.sh/chart: {{ include "http-https-echo.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "http-https-echo.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "http-https-echo.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "http-https-echo.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "http-https-echo.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "http-https-echo.labels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name | quote }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           env:
             - name: HTTP_PORT
               value: {{ .Values.service.httpPort | quote }}
@@ -31,10 +26,8 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.service.httpPort }}
-              protocol: TCP
             - name: https
               containerPort: {{ .Values.service.httpsPort }}
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: /

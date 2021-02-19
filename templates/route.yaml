@@ -1,0 +1,32 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "http-https-echo.fullname" . | quote }}
+  labels:
+    {{- include "http-https-echo.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.route.host | quote }}
+  path: {{ .Values.route.path | quote }}
+  port:
+    targetPort: http
+  {{- if .Values.route.tls.enabled }}
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: Edge
+    {{- if .Values.route.tls.caCertificate }}
+    caCertificate: |-
+      {{- .Values.route.tls.caCertificate | nindent 6 }}
+    {{- end }}
+    {{- if .Values.route.tls.certificate }}
+    certificate: |-
+      {{- .Values.route.tls.certificate | nindent 6 }}
+    {{- end}}
+    {{- if .Values.route.tls.key }}
+    key: |-
+      {{- .Values.route.tls.key | nindent 6 }}
+    {{- end }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "http-https-echo.fullname" . }}
+  wildcardPolicy: None
