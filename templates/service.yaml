@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "http-https-echo.fullname" . }}
+  name: {{ include "http-https-echo.fullname" . | quote }}
   labels:
-    app.kubernetes.io/name: {{ include "http-https-echo.name" . }}
-    helm.sh/chart: {{ include "http-https-echo.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "http-https-echo.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  {{- if .Values.service.headless }}
+  clusterIP: None
+  {{- end }}
   ports:
     - name: http
       port: {{ .Values.service.httpPort }}
@@ -17,5 +16,5 @@ spec:
       port: {{ .Values.service.httpsPort }}
       targetPort: https
   selector:
-    app.kubernetes.io/name: {{ include "http-https-echo.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "http-https-echo.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.service.type | quote }}

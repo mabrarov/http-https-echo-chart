@@ -1,2 +1,3 @@
-charts
-http-https-echo-*
+# IntelliJ IDEA stuff
+.idea/
+*.iml

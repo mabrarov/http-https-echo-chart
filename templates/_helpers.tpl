@@ -1,4 +1,3 @@
-{{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
 */}}
@@ -30,3 +29,24 @@ Create chart name and version as used by the chart label.
 {{- define "http-https-echo.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "http-https-echo.labels" -}}
+app: {{ include "http-https-echo.name" . | quote }}
+helm.sh/chart: {{ include "http-https-echo.chart" . | quote }}
+{{ include "http-https-echo.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "http-https-echo.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "http-https-echo.name" . | quote }}
+app.kubernetes.io/instance: {{ .Release.Name | quote }}
+{{- end }}
